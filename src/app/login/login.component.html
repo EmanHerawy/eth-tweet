@@ -1,0 +1,25 @@
+<div class="modal-card">
+
+  <section class="modal-card-body">
+    <form [formGroup]="form">
+      <div class="field">
+        <label class="label">Name</label>
+        <div class="control">
+          <input class="input" type="text" placeholder="e.g Alex Smith" formControlName="name">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Address</label>
+        <div class="control">
+          <input class="input" type="text" placeholder="e.g. 0x54sdfc541sdcsdf" formControlName="address">
+        </div>
+      </div>
+      <button class="button is-primary" [disabled]="form.invalid" (click)="onRegister()">Register</button>
+      <button class="button is-info" [disabled]="form.invalid" (click)="onLogin()">Login</button>
+      <button class="button">Cancel</button>
+    </form>
+
+  </section>
+
+</div>

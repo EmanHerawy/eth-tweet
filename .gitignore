@@ -3,3 +3,5 @@
 *.swp
 go/bin
 go/pkg
+/node_modules/
+
