@@ -13,6 +13,8 @@ export class HomeComponent implements OnInit {
   tweetNum;
   index = 0;
   membersNum;
+  account = {};
+  contractAddress;
   ngOnInit() {
     // this.getNumberOfAccounts();
     this.tweets = [];
@@ -27,28 +29,16 @@ export class HomeComponent implements OnInit {
   }
   getAccountOfAddress() {
     this.service.getUserAccountOfAddress().then((r) => {
-      console.log('get contrat', r[0])
-      if (r != '0x0000000000000000000000000000000000000000') {
-        this.getTweetNumber(r)
+      if (r != undefined && r != null) {
+        console.log('get contrat', r[0])
+        if (r[0] != '0x0000000000000000000000000000000000000000') {
+          this.contractAddress = r[0];
+        }
       }
     })
 
 
   }
-  getTweetNumber(address) {
-    this.service.getTweetNumber(address).then(t => {
-      this.tweetNum = t;
-      for (let index = 0; index < this.tweetNum; index++) {
-        this.gettweet(index);
-      }
-      console.log(t, 'first call')
-    })
-  }
-  gettweet(id) {
-    this.service.getTweet(id).then((t) => {
-      console.log(t, 'first call');
-      this.tweets.push(t);
-    })
-  }
+
 
 }

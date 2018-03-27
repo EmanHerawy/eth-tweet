@@ -5,7 +5,6 @@
         <th>Num</th>
         <th>Name</th>
         <th>Address</th>
-        <th>Status</th>
         <th>Action</th>
 
       </tr>
@@ -18,14 +17,16 @@
         </td>
         <td>{{item.address}}
         </td>
-        <td *ngIf="item.isActive" class="has-text-success">Active
-        </td>
-        <td *ngIf="!item.isActive" class="has-text-danger">InActive
+
+        <td>
+          <button (click)="onDonate(item.address)" class="button is-info is-fullwidth is-outlined">
+            <span>Donate</span>
+          </button>
+
         </td>
         <td>
-          <button (click)="changeStaus(item.isActive,item.address,i)" class="button is-info is-fullwidth is-outlined">
-            <span *ngIf="!item.isActive">activate</span>
-            <span *ngIf="item.isActive">Deactivate</span>
+          <button (click)="onViewTweet(item.address)" class="button is-success is-fullwidth is-outlined">
+            <span>View Tweets</span>
           </button>
 
         </td>

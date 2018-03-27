@@ -22,12 +22,15 @@ export class TwitterService {
   checkAndInstantiateWeb3() {
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     if (typeof this.web3 !== 'undefined') {
+      console.log('this.web3 !== undefined', this.web3)
       console.warn('Using web3 detected from external source. If you find that your accounts don\'t appear or you have ' +
         '0 TweetRegistry, ensure you\'ve configured that source properly. If using MetaMask, see the following link. Feel ' +
         'free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask');
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(this.web3.currentProvider);
     } else {
+      console.log('this.web3  is undefined', this.web3)
+
       console.warn('No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when ' +
         'you deploy live, as it\'s inherently insecure. Consider switching to Metamask for development. More info ' +
         'here: http://truffleframework.com/tutorials/truffle-and-metamask');
@@ -69,94 +72,7 @@ export class TwitterService {
   setStatus(message: string) {
     this.status = message;
   }
-  addAuthMember(name: string, newAccount: string) {
-    let meta;
-    this.TweetRegistry.deployed()
-      .then((instance) => {
-        console.log('addAuthMember')
 
-        meta = instance;
-        return meta.addauth(newAccount, name, {
-          from: this.account, gas: 101491
-        });
-      })
-      .then((res) => {
-        console.log('addAuthMember', res)
-
-        this.setStatus('Transaction complete!');
-      })
-      .catch((e) => {
-        console.log(e);
-        this.setStatus('Error sending coin; see log.');
-      });
-  }
-  createIdentity(data) {
-
-    let meta;
-    this.TweetRegistry.deployed()
-      .then((instance) => {
-        console.log('createIdentity', parseInt(data.nationalId, 10));
-
-        meta = instance;
-        return meta.createidentity(parseInt(data.nationalId, 10), data.firstName,
-          data.bloodGroup,
-          data.fathercontractAddress,
-          data.mothercontractAddress, {
-            from: this.account, gas: 3000000
-          });
-      })
-      .then((res) => {
-        console.log('createIdentity', res)
-
-        this.setStatus('Transaction complete!');
-      })
-      .catch((e) => {
-        console.log(e);
-        this.setStatus('Error sending coin; see log.');
-      });
-  }
-
-  async getIssuer() {
-    console.log('getIssuer')
-    let meta;
-    let data;
-    this.TweetRegistry.deployed()
-      .then((instance) => {
-        // meta = instance;
-        return instance.Issuer.call();
-      })
-      .then((rs) => {
-        console.log('rs', rs);
-        this.setStatus('Transaction complete!');
-        return rs;
-
-      })
-      .catch((e) => {
-        console.log(e);
-        this.setStatus('Error sending coin; see log.');
-      });
-  }
-
-  async getCurrentAccount() {
-    return this.account
-    // const currentAccount = await this.web3.eth.getAccounts((err, accs) => {
-    //   if (err != null) {
-    //     alert('There was an error fetching your accounts.');
-    //     return;
-    //   }
-
-    //   if (accs.length === 0) {
-    //     alert('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
-    //     return;
-    //   }
-    //   this.accounts = accs;
-    //   this.account = this.accounts[0];
-    //   console.log(this.account);
-    //   return this.account;
-    //   //  this.refreshBalance();
-    // });
-    // return currentAccount;
-  }
   /****************** for tweeets contract********************** */
   // const result =await return int numberOfTweets
   async  getTweetNumber(address) {
@@ -166,9 +82,9 @@ export class TwitterService {
         // meta = instance;
         return instance.getNumberOfTweets.call();
       }).then((rs) => {
-        console.log('rs', rs);
+        console.log('rs', rs.c[0]);
         this.setStatus('Transaction complete!');
-        return rs;
+        return rs.c[0];
 
       })
       .catch((e) => {
@@ -268,14 +184,14 @@ export class TwitterService {
         this.setStatus('Error sending coin; see log.');
       }); return result;
   }
-  async tweet(tweetString) {
-    const result = await this.TweetAccount.deployed()
+  async tweet(tweetString, address) {
+    const result = await this.TweetAccount.at(address)
       .then((instance) => {
-        return instance.tweet(tweetString, {
+        return instance.tweet.call(tweetString, {
           from: this.account, gas: 300000
-        }).call();
+        });
       }).then((rs) => {
-        console.log('rs', rs);
+        console.log('rs tweet', rs);
         this.setStatus('Transaction complete!');
         return rs;
 
@@ -285,11 +201,11 @@ export class TwitterService {
         this.setStatus('Error sending coin; see log.');
       }); return result;
   }
-  async  getTweet(tweetId) {
-    const result = await this.TweetAccount.deployed()
+  async  getTweet(tweetId, address) {
+    const result = await this.TweetAccount.at(address)
       .then((instance) => {
         // meta = instance;
-        return instance.getTweet(tweetId).call();
+        return instance.getTweet.call(tweetId);
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');

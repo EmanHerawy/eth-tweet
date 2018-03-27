@@ -35,10 +35,12 @@ export class AppComponent implements OnInit {
   }
   getAccountOfAddress() {
     this.service.getUserAccountOfAddress().then((r) => {
-      console.log('get contrat', r[0])
-      if (r[0] != '0x0000000000000000000000000000000000000000') {
-        this.service.getِTweetContractBalance(r[0]).then(e => this.userBalance = e);
-        this.service.getTweetNumber(r[0]).then(e => this.tweetCount = e);
+      if (r != undefined && r != null) {
+        console.log('get contrat', r[0])
+        if (r[0] != '0x0000000000000000000000000000000000000000') {
+          this.service.getِTweetContractBalance(r[0]).then(e => this.userBalance = e);
+          this.service.getTweetNumber(r[0]).then(e => this.tweetCount = e);
+        }
       }
     })
 

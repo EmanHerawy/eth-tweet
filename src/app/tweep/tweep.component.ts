@@ -5,11 +5,11 @@ const contract = require('truffle-contract');
 const contractAddress = '0xa449f9d01d3ce39ed40034db207c98949a572b92';
 const abi = "";
 @Component({
-  selector: 'app-auth',
-  templateUrl: 'auth.component.html'
+  selector: 'app-tweep',
+  templateUrl: 'tweep.component.html'
 })
 
-export class AuthComponent implements OnInit {
+export class TweepsComponent implements OnInit {
   account: any;
   accounts: any;
   web3: any;

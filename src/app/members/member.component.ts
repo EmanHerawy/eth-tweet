@@ -27,6 +27,12 @@ export class MemberComponent implements OnInit {
       }
     });
   }
+  onDonate(address) {
+
+  }
+  onViewTweet(address) {
+
+  }
   getMembers() {
     for (let index = 0; index < this.num; index++) {
       this.service.getAddressOfId(index).then((add) => {

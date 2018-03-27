@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // "class" TweetAccount
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.17;
 
 contract TweetAccount {
 	
@@ -55,13 +55,14 @@ contract TweetAccount {
 	// }
 	
 	// create new tweet
-	function tweet(string tweetString) public IsAdmin isValidTweet(tweetString) returns (int result) {
+	function tweet(string tweetString) public IsAdmin 
+	isValidTweet(tweetString) returns (bool,uint,string) {
 
 
 			_tweets[_numberOfTweets].timestamp = now;
 			_tweets[_numberOfTweets].tweetString = tweetString;
 			_numberOfTweets++;
-			result = 0; // success
+			return (true,_numberOfTweets,tweetString); // success
 	}
 	
 	function getTweet(uint tweetId)public constant returns (string tweetString, uint timestamp) {

@@ -18,6 +18,18 @@
         <td>{{item.address}}
         </td>
 
+        <td>
+          <button (click)="onDonate(item.address)" class="button is-info is-fullwidth is-outlined">
+            <span>Donate</span>
+          </button>
+
+        </td>
+        <td>
+          <button (click)="onViewTweet(item.address)" class="button is-success is-fullwidth is-outlined">
+            <span>View Tweets</span>
+          </button>
+
+        </td>
 
 
       </tr>
