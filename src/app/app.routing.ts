@@ -2,8 +2,8 @@ import { Routes } from '@angular/router';
 import {
   HomeComponent,
   // UserAddComponent, UserEditComponent, UserSearchComponent,
-  MemberComponent
-  // , TweepsComponent
+  MemberComponent, TweetComponent, RegisterComponent
+  , AccountSettingComponent
 } from './index';
 
 
@@ -15,11 +15,9 @@ export const AppRouts: Routes = [
   },
   { path: 'home', component: HomeComponent },
   { path: 'members', component: MemberComponent },
-  // { path: 'add-auth', component: AddAuthComponent },
-  // { path: 'edit-user', component: UserEditComponent },
-  // { path: 'search-user', component: UserSearchComponent },
-  // { path: 'user-dna', component: AddDNAComponent },
-  { path: 'members', component: MemberComponent }, {
+  { path: 'viewTweet', component: TweetComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'setting', component: AccountSettingComponent }, {
     path: '**',
     redirectTo: 'home'
   }

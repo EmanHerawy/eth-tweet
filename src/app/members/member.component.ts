@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TwitterService } from '../twitter.service';
-import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-member',
@@ -12,34 +12,39 @@ export class MemberComponent implements OnInit {
   status: string;
   members = [];
   num;
+  donateValue;
   //MainAuth = contract(mainAuth);
   constructor(private service: TwitterService,
-    private activatedRoute: ActivatedRoute) {
+    private router: Router) {
   }
+
   ngOnInit() {
-    // this.checkAndInstantiateWeb3();
-    // this.onReady();
-    this.activatedRoute.queryParams.subscribe(params => {
-      this.num = params['memberCount'];
-      if (this.num != undefined) {
-        console.log(this.num); // Print the parameter to the console. 
-        this.getMembers();
+    this.getMembersCount()
+  }
+  getMembersCount() {
+    this.service.getNumberOfAccounts().then((rs) => {
+      console.log(rs, 'getNumberOfAccounts member component')
+      for (let index = 0; index < rs; index++) {
+        this.getMemeberData(index);
       }
-    });
+    })
+  }
+  getMemeberData(index) {
+    this.service.getAccountById(index).then(m => {
+      console.log(m, 'member data');
+      const member = { address: m[0], name: m[1] }
+      this.members.push(member);
+    })
   }
   onDonate(address) {
+    this.service.donateToAccount(address, this.donateValue).then(s => {
+      console.log(s, 'donate');
 
+    })
   }
   onViewTweet(address) {
+    this.router.navigate(['/viewTweet'], { queryParams: { address: address } });
 
   }
-  getMembers() {
-    for (let index = 0; index < this.num; index++) {
-      this.service.getAddressOfId(index).then((add) => {
-        this.service.getAccountOfAddress(add).then((account) => {
-          this.members.push(account);
-        })
-      })
-    }
-  }
+
 }

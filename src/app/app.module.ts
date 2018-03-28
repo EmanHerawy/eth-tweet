@@ -7,18 +7,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TwitterService } from './twitter.service';
 import { AppRouts } from './app.routing';
 import {
-  HomeComponent, LoginComponent, MemberComponent, AddTweetComponent,
-  TweepsComponent, TweetComponent
+  HomeComponent, RegisterComponent, MemberComponent,
+  AccountSettingComponent, TweetComponent
 } from './index';
 
 @NgModule({
   declarations: [
-    AppComponent, HomeComponent, TweetComponent, AddTweetComponent,
-    MemberComponent, LoginComponent
+    AppComponent, HomeComponent, TweetComponent,
+    MemberComponent, RegisterComponent
     //, AddDNAComponent, UserAddComponent, UserEditComponent, 
     // UserSearchComponent
     ,
-    TweepsComponent
+    AccountSettingComponent
   ],
   imports: [
     BrowserModule,

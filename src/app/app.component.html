@@ -1,5 +1,29 @@
 <div class="container is-widescreen">
-
+  <div class="tabs is-right is-mobile">
+    <ul>
+      <li>
+        <a routerLink="/register">Register</a>
+      </li>
+      <li>
+        <a>About US</a>
+      </li>
+      <li>
+        <a>Doc</a>
+      </li>
+      <li>
+        <div class="field has-addons is-mobile">
+          <div class="control ">
+            <input class="input " [(ngModel)]="donateValue" type="text" placeholder="Donate in wei ">
+          </div>
+          <div class="control">
+            <a class="button is-info" (click)="onDonate()">
+              Support US
+            </a>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
   <section class="hero is-info">
 
     <div class="hero-body">
@@ -90,24 +114,20 @@
         </div>
       </div>
     </nav> -->
-    <div class="tabs is-centered">
+    <div class="tabs is-left is-mobile">
       <ul>
         <li class="is-active" routerLink="/home">
           <a>Home</a>
         </li>
 
-        <li>
-          <a (click)="loginClick()">LogIn</a>
-        </li>
+
         <li>
           <a routerLink="/members">Members</a>
         </li>
         <li>
-          <a>About US</a>
+          <a routerLink="/setting">Account Setting</a>
         </li>
-        <li>
-          <a>Documentation</a>
-        </li>
+
       </ul>
     </div>
   </section>
@@ -128,10 +148,10 @@
     <div class="container">
       <div class="content has-text-centered">
         <p>
-          <strong> My Twetter</strong> by
+          <strong> My Twitter</strong> by
           <a href="https://www.linkedin.com/in/emanherawy/">Eman El Herawy</a>
           &
-          <a href="https://www.linkedin.com">Mustaf El Naquib</a>. The source code is licensed
+          <a href="https://www.linkedin.com/in/mustafa-elnaquib-47b0477b/">Mustaf El Naquib</a>. The source code is licensed
           <a href="https://www.facebook.com/nutechspace/">NUTechSPace</a>
         </p>
       </div>

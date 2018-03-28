@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { canBeNumber } from '../util/validation';
 import { TwitterService } from './twitter.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -9,15 +10,16 @@ import { TwitterService } from './twitter.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  Login: boolean;
   status: string;
-  constructor(private service: TwitterService) { }
+  constructor(private service: TwitterService, private router: Router) { }
   tweets = [];
   membersNum;
   userBalance;
   tweetCount;
   account;
+  donateValue
   ngOnInit() {
+
     this.getNumberOfAccounts();
     this.getAccountOfAddress();
   }
@@ -40,17 +42,18 @@ export class AppComponent implements OnInit {
         if (r[0] != '0x0000000000000000000000000000000000000000') {
           this.service.getِTweetContractBalance(r[0]).then(e => this.userBalance = e);
           this.service.getTweetNumber(r[0]).then(e => this.tweetCount = e);
+        } else {
+          this.router.navigate(['/register'])
         }
       }
     })
 
 
   }
-  onLogin(address) {
-    this.account = address;
-    this.Login = true
-  }
-
-  loginClick() {
+  onDonate() {
+    this.service.donateToApp(this.donateValue).then(s => {
+      console.log(s, 'donate');
+      alert('Thanks for supporting us')
+    })
   }
 }

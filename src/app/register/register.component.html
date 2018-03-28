@@ -1,5 +1,9 @@
 <div class="modal-card">
-
+  <div class="notification is-warning">
+    <button class="delete"></button>
+    you will register with your current account
+    <strong>Make sure it's running and you have enough Balance </strong>
+  </div>
   <section class="modal-card-body">
     <form [formGroup]="form">
       <div class="field">
@@ -9,15 +13,15 @@
         </div>
       </div>
 
-      <div class="field">
+      <!-- <div class="field">
         <label class="label">Address</label>
         <div class="control">
           <input class="input" type="text" placeholder="e.g. 0x54sdfc541sdcsdf" formControlName="address">
         </div>
-      </div>
+      </div> -->
       <button class="button is-primary" [disabled]="form.invalid" (click)="onRegister()">Register</button>
-      <button class="button is-info" [disabled]="form.invalid" (click)="onLogin()">Login</button>
-      <button class="button">Cancel</button>
+      <!-- <button class="button is-info" [disabled]="form.invalid" (click)="onLogin()">Login</button> -->
+      <button class="button" routerLink="/home">Cancel</button>
     </form>
 
   </section>

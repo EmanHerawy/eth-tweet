@@ -5,6 +5,8 @@
         <th>Num</th>
         <th>Name</th>
         <th>Address</th>
+        <th> </th>
+        <th> </th>
 
 
       </tr>
@@ -19,9 +21,16 @@
         </td>
 
         <td>
-          <button (click)="onDonate(item.address)" class="button is-info is-fullwidth is-outlined">
-            <span>Donate</span>
-          </button>
+          <div class="field has-addons">
+            <div class="control ">
+              <input class="input " style="width: 60px;" [(ngModel)]="donateValue" type="text" placeholder="0 wei">
+            </div>
+            <div class="control">
+              <a class="button is-info" (click)="onDonate(item.address)">
+                Donate
+              </a>
+            </div>
+          </div>
 
         </td>
         <td>

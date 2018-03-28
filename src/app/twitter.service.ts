@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
-const Web3 = require('web3');
 const contract = require('truffle-contract');
 const tweetRegistry = require('../../build/contracts/TweetRegistry.json');
 const tweetAccount = require('../../build/contracts/TweetAccount.json');
+declare global {
+  interface Window { web3: any; }
+}
 
+window.web3 = window.web3 || {};
 @Injectable()
 export class TwitterService {
 
@@ -16,28 +19,12 @@ export class TwitterService {
   TweetAccount = contract(tweetAccount);
 
   constructor() {
-    this.checkAndInstantiateWeb3();
+    this.web3 = window.web3;
+
+    ///this.checkAndInstantiateWeb3();
     this.onReady();
   }
-  checkAndInstantiateWeb3() {
-    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-    if (typeof this.web3 !== 'undefined') {
-      console.log('this.web3 !== undefined', this.web3)
-      console.warn('Using web3 detected from external source. If you find that your accounts don\'t appear or you have ' +
-        '0 TweetRegistry, ensure you\'ve configured that source properly. If using MetaMask, see the following link. Feel ' +
-        'free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask');
-      // Use Mist/MetaMask's provider
-      this.web3 = new Web3(this.web3.currentProvider);
-    } else {
-      console.log('this.web3  is undefined', this.web3)
 
-      console.warn('No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when ' +
-        'you deploy live, as it\'s inherently insecure. Consider switching to Metamask for development. More info ' +
-        'here: http://truffleframework.com/tutorials/truffle-and-metamask');
-      // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-    }
-  }
   getMembers() {
     console.log('authorities')
     let meta;
@@ -66,12 +53,14 @@ export class TwitterService {
       this.accounts = accs;
       this.account = this.accounts[0];
       console.log(this.account);
+
       //  this.refreshBalance();
     });
   }
   setStatus(message: string) {
     this.status = message;
   }
+  // manage account
 
   /****************** for tweeets contract********************** */
   // const result =await return int numberOfTweets
@@ -99,11 +88,11 @@ export class TwitterService {
   async donateToAccount(address, value) {
     const tweetContract = this.TweetAccount.at(address);
     const result = await tweetContract.then((instance) => {
-      return instance.Donate({
+      return instance.Donate.sendTransaction({
         from: this.account, gas: 300000, value: value
-      }).call();
+      });
     }).then((rs) => {
-      console.log('rs', rs);
+      console.log('rs donateToAccount', rs);
       this.setStatus('Transaction complete!');
       return rs;
 
@@ -134,12 +123,12 @@ export class TwitterService {
         this.setStatus('Error sending coin; see log.');
       }); return result;
   }
-  async adminDeleteAccount() {
-    const result = await this.TweetAccount.deployed()
+  async TweepDeActivateAccount(address) {
+    const result = await this.TweetAccount.at(address)
       .then((instance) => {
-        return instance.adminDeleteAccount({
+        return instance.adminDeleteAccount.sendTransaction({
           from: this.account, gas: 300000
-        }).call();
+        });
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -151,12 +140,12 @@ export class TwitterService {
         this.setStatus('Error sending coin; see log.');
       }); return result;
   }
-  async tweebRetrieveDonations(to, amount) {
-    const result = await this.TweetAccount.deployed()
+  async tweebRetrieveDonations(to, amount, address) {
+    const result = await this.TweetAccount.at(address)
       .then((instance) => {
-        return instance.adminRetrieveDonations(to, amount, {
+        return instance.adminRetrieveDonations.sendTransaction(to, amount, {
           from: this.account, gas: 300000
-        }).call();
+        });
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -168,8 +157,8 @@ export class TwitterService {
         this.setStatus('Error sending coin; see log.');
       }); return result;
   }
-  async getOwnerAddress() {
-    const result = await this.TweetAccount.deployed()
+  async getOwnerAddress(address) {
+    const result = await this.TweetAccount.at(address)
       .then((instance) => {
         // meta = instance;
         return instance.getOwnerAddress.call();
@@ -185,9 +174,11 @@ export class TwitterService {
       }); return result;
   }
   async tweet(tweetString, address) {
+    console.log(address, 'address');
+
     const result = await this.TweetAccount.at(address)
       .then((instance) => {
-        return instance.tweet.call(tweetString, {
+        return instance.tweet.sendTransaction(tweetString, {
           from: this.account, gas: 300000
         });
       }).then((rs) => {
@@ -217,8 +208,8 @@ export class TwitterService {
         this.setStatus('Error sending coin; see log.');
       }); return result;
   }
-  async  getLatestTweet() {
-    const result = await this.TweetAccount.deployed()
+  async  getLatestTweet(address) {
+    const result = await this.TweetAccount.at(address)
       .then((instance) => {
         // meta = instance;
         return instance.getLatestTweet.call();
@@ -255,9 +246,9 @@ export class TwitterService {
   async donateToApp(value) {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.Donate({
+        return instance.Donate.sendTransaction({
           from: this.account, gas: 300000, value: value
-        }).call();
+        });
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -269,12 +260,13 @@ export class TwitterService {
         this.setStatus('Error sending coin; see log.');
       }); return result;
   }
-  async  register(name) {
+  async  register(name/*, address*/) {
+
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.register.call(name, {
+        return instance.register.sendTransaction(name, {
           // from: this.account, gas: 300000
-          from: '0xd24a014b8fd79f2a5082cf4fb961c918cb92f497', gas: 300000
+          from: this.account, gas: 3000000
         });
       }).then((rs) => {
         console.log('rs', rs);
@@ -290,7 +282,7 @@ export class TwitterService {
   async  getAddressOfName(name) {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.getAddressOfName(name).call();
+        return instance.getAddressOfName.call(name);
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -318,10 +310,44 @@ export class TwitterService {
         this.setStatus('Error sending coin; see log.');
       }); return result;
   }
+  async  isCurrentUserAdmin() {
+    const result = await this.TweetRegistry.deployed()
+      .then((instance) => {
+        console.log('this.account', this.account)
+        return instance.getAddressOfId.call(0)
+      }).then((rs) => {
+        console.log('getUserAccountOfAddress', rs);
+
+        this.setStatus('Transaction complete!');
+        return (this.account == rs);
+
+      })
+      .catch((e) => {
+        console.log(e);
+        this.setStatus('Error sending coin; see log.');
+      }); return result;
+  }
+
   async  getAccountOfAddress(addr) {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.getAccountOfAddress(addr).call();
+        return instance.getAccountOfAddress.call(addr);
+
+      }).then((rs) => {
+        console.log('rs', rs);
+        this.setStatus('Transaction complete!');
+        return rs;
+
+      })
+      .catch((e) => {
+        console.log(e);
+        this.setStatus('Error sending coin; see log.');
+      }); return result;
+  }
+  async  getAccountById(index) {
+    const result = await this.TweetRegistry.deployed()
+      .then((instance) => {
+        return instance.getAccountById.call(index);
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -336,7 +362,7 @@ export class TwitterService {
   async  getNameOfAddress(addr) {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.getNameOfAddress(addr).call();
+        return instance.getNameOfAddress.call(addr);
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -351,7 +377,7 @@ export class TwitterService {
   async  getAddressOfId(id) {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.getAddressOfId(id).call();
+        return instance.getAddressOfId.call(id);
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -366,9 +392,9 @@ export class TwitterService {
   async  unregister() {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.unregister({
+        return instance.unregister.sendTransaction({
           from: this.account, gas: 300000
-        }).call();
+        });
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -383,9 +409,9 @@ export class TwitterService {
   async adminUnregister(name) {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.adminUnregister(name, {
+        return instance.adminUnregister.sendTransaction(name, {
           from: this.account, gas: 300000
-        }).call();
+        });
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -400,9 +426,9 @@ export class TwitterService {
   async  adminSetRegistrationDisabled(status: boolean) {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.adminSetRegistrationDisabled(status, {
+        return instance.adminSetRegistrationDisabled.sendTransaction(status, {
           from: this.account, gas: 300000
-        }).call();
+        });
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -417,9 +443,9 @@ export class TwitterService {
   async  adminSetAccountAdministrator(accountAdmin) {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.adminSetAccountAdministrator(accountAdmin, {
+        return instance.adminSetAccountAdministrator.sendTransaction(accountAdmin, {
           from: this.account, gas: 300000
-        }).call();
+        });
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -434,9 +460,9 @@ export class TwitterService {
   async  adminRetrieveDonations(to, amount) {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.adminRetrieveDonations(to, amount, {
+        return instance.adminRetrieveDonations.sendTransaction(to, amount, {
           from: this.account, gas: 300000
-        }).call();
+        });
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -452,9 +478,9 @@ export class TwitterService {
   async  adminDeleteRegistry() {
     const result = await this.TweetRegistry.deployed()
       .then((instance) => {
-        return instance.adminDeleteRegistry({
+        return instance.adminDeleteRegistry.sendTransaction({
           from: this.account, gas: 300000
-        }).call();
+        });
       }).then((rs) => {
         console.log('rs', rs);
         this.setStatus('Transaction complete!');
@@ -467,8 +493,8 @@ export class TwitterService {
       }); return result;
 
   }
-  async  getRegistryBalance(address) {
-    const result = await this.TweetRegistry.at(address)
+  async  getRegistryBalance() {
+    const result = await this.TweetRegistry.deployed()
       .then((instance) => {
         return instance.getBalance.call();
       }).then((rs) => {
@@ -491,7 +517,7 @@ export class TwitterService {
         console.log(s, 'from service')
         return s;
       }).then((rs) => {
-        console.log('rs', rs);
+        console.log('rs.c[0]', rs.c[0]);
         this.setStatus('Transaction complete!');
         return rs.c[0];
 
