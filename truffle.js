@@ -10,7 +10,7 @@
 const HDWalletProvider = require('truffle-hdwallet-provider');
 
 // read from mnemonic seed
-const mnemonic = "";
+const mnemonic = "put your mnemonic seed here if you want to deploy your own version";
 
 module.exports = {
   networks: {
